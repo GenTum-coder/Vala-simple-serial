@@ -1,9 +1,18 @@
-#include <stdio.h>   /* Standard input/output definitions */
-#include <string.h>  /* String function definitions */
-#include <unistd.h>  /* UNIX standard function definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <errno.h>   /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
+
+//#include <stdio.h>   /* Standard input/output definitions */
+//#include <string.h>  /* String function definitions */
+//#include <unistd.h>  /* UNIX standard function definitions */
+//#include <fcntl.h>   /* File control definitions */
+//#include <errno.h>   /* Error number definitions */
+//#include <termios.h> /* POSIX terminal control definitions */
+
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+//#include <posix.h>
+#include <termios.h>
+#include <stdio.h>
 
 /*
  * 'open_port()' - Open serial port 1.
@@ -16,13 +25,14 @@ int open_port()
 	int fd; /* File descriptor for the port */
 
 	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+	//fd = open( "/sysroot/dev/ttyUSB0", O_RDWR| O_NOCTTY );
 	if (fd == -1)
 	{
 		/*
 		* Could not open the port.
 		*/
 
-		perror("open_port: Unable to open /dev/ttyf1 - ");
+		perror("open_port: Unable to open /dev/ttyUSB0 - ");
 	}
 	else
 		fcntl(fd, F_SETFL, 0);
@@ -32,6 +42,9 @@ int open_port()
 
 void close_port(int fd)
 {
-	close(fd);
+	if (fd >= 0)
+		{
+			close(fd);
+		}
 }
 

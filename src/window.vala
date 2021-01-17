@@ -49,10 +49,17 @@ namespace ValaTerminal {
         private void port_ctrl() {
 			//check1.set_mode(true);
 			if (!check1.get_active()) {
-				check1.set_active(true);
-				button2.label = "Disconnect";
+				fd = open_port();
+				if (fd != -1) {
+					check1.set_active(true);
+					button2.label = "Disconnect";
+				}
 			}
 			else {
+				if (fd != -1) {
+					close_port(fd);
+					fd = -1;
+				}
 				check1.set_active(false);
 				button2.label = "Connect";
 			}
