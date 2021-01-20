@@ -21,6 +21,11 @@ using Gtk;
 
 extern int  open_port();
 extern void close_port(int fd);
+extern void clear_port();
+extern int set_buffer();
+extern int is_buffer();
+extern char read_char();
+
 
 namespace ValaTerminal {
 	[GtkTemplate (ui = "/org/example/App/window.ui")]
@@ -35,6 +40,10 @@ namespace ValaTerminal {
 
         string str;
         int fd;
+        int n;
+        int t;
+        char ch;
+
         TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
 
         private void send() {
@@ -74,12 +83,41 @@ namespace ValaTerminal {
 			Object (application: app);
 
             str = "";
+            fd  = -1;
+            clear_port();
+            n = set_buffer();
+            t = 0;
+            ch = ' ';
 
             memo1.set_buffer(buffer);
 
 			button1.clicked.connect (this.send);
 			button2.clicked.connect (this.port_ctrl);
 			combo1.changed.connect (this.br_chg);
+
+
+            TimeoutSource time = new TimeoutSource(2000);   // set timer in millisecond
+            time.set_callback(() => {
+                //t++;
+                //label1.label = "Hello World! + " + t.to_string ();
+                //while ((fd >= 0) && (is_buffer() > 0)) {
+                //	read_char();
+                //	str = str + "Hello"; //(string)read_char();
+                //}
+				n = is_buffer();
+				//label1.label = "Cnt n = " + n.to_string ();
+				str = "Cnt n = " + n.to_string ();
+				if (n > 0) {
+					ch = read_char();
+					str = str + " ch = " + ch.to_string();
+				}
+                buffer.set_text(str);
+                label1.label = str;
+
+                return true;    // timer continue
+                //return false;   // timer stop
+            });
+            time.attach(null);
 
             this.show_all ();
 		}

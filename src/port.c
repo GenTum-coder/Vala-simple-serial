@@ -28,10 +28,11 @@ volatile int stop = FALSE;
 void signal_handler_IO (int status);	/* объявление обработчика сигнала */
 int wait_flag = TRUE;               	/* TRUE пока не получен сигнал */
 
-//int fd,c, res;
+int fd;  	/* File descriptor for the port */
+int p1, p2, res;
 //struct termios oldtio,newtio;
 struct sigaction saio;           		/* объявление действия сигнала (signal action) */
-char buf[255];
+char buf[32768];
 
 /*
  * 'open_port()' - Open serial port 1.
@@ -41,7 +42,7 @@ char buf[255];
 
 int open_port()
 {
-	int fd; /* File descriptor for the port */
+	//int fd; /* File descriptor for the port */
 
 	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
 	//fd = open( "/sysroot/dev/ttyUSB0", O_RDWR| O_NOCTTY );
@@ -55,6 +56,9 @@ int open_port()
 	}
 	else
 	{
+		p1  = 0;
+		p2  = 0;
+		res = 0;
 		//fcntl(fd, F_SETFL, 0);
         /*
           устанавливаем обработчик сигнала перед установкой устройства как асинхронного
@@ -92,10 +96,42 @@ void close_port(int fd)
 		}
 }
 
+int set_buffer()
+{
+	buf[p2] = 'q';
+	p2++;
+	buf[p2] = 'w';
+	p2++;
+	buf[p2] = 0;
+	return p2 - p1;
+}
+
 int is_buffer()
 {
-	if (wait_flag == FALSE) return 1;
-	else return 0;
+	//if (wait_flag == FALSE) return 1;
+	//else return 0;
+	return p2 - p1;
+}
+
+void clear_port()
+{
+	p1  = 0;
+	p2  = 0;
+	res = 0;
+
+}
+
+char read_char()
+{
+	char ch = 0;
+
+	//res = read(fd, &buf[p2], 255);
+	//buf[res+p2] = 0;
+	if (p1 < p2) {
+		ch = buf[p1];
+		p1++;
+	}
+	return ch;
 }
 
 /***************************************************************************
@@ -104,7 +140,12 @@ int is_buffer()
 ***************************************************************************/
 void signal_handler_IO (int status)
 {
-	printf("received SIGIO signal.\n");
+	//printf("received SIGIO signal.\n");
+	res = read(fd, &buf[p2], 255);
+	//buf[p2+res] = 0;
+	p2 = p2 + res;
+	buf[p2] = 0;
+
 	wait_flag = FALSE;
 }
 
