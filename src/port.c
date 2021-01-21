@@ -15,6 +15,7 @@
 #include <termios.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <fcntl.h>
 #include <sys/signal.h>
 #include <sys/types.h>
@@ -59,29 +60,66 @@ int open_port()
 		p1  = 0;
 		p2  = 0;
 		res = 0;
+
+		// Flush away any bytes previously read or written.
+		int result = tcflush(fd, TCIOFLUSH);
+		if (result)
+		{
+			perror("tcflush failed - ");  // just a warning, not a fatal error
+		}
+
+		// Get the current configuration of the serial port.
+		struct termios options;
+		result = tcgetattr(fd, &options);
+		if (result)
+		{
+			perror("tcgetattr failed - ");
+			close(fd);
+			return -1;
+		}
+
+		// Turn off any options that might interfere with our ability to send and
+		// receive raw binary bytes.
+		options.c_iflag &= ~(INLCR | IGNCR | ICRNL | IXON | IXOFF);
+		options.c_oflag &= ~(ONLCR | OCRNL);
+		options.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+
+		// Set up timeouts: Calls to read() will return as soon as there is
+		// at least one byte available or when 100 ms has passed.
+		options.c_cc[VTIME] = 1;
+		options.c_cc[VMIN]  = 0;
+
+		result = tcsetattr(fd, TCSANOW, &options);
+		if (result)
+		{
+			perror("tcsetattr failed - ");
+			close(fd);
+			return -1;
+		}
+
 		//fcntl(fd, F_SETFL, 0);
         /*
           устанавливаем обработчик сигнала перед установкой устройства как асинхронного
         */
-        saio.sa_handler = signal_handler_IO;
+        //saio.sa_handler = signal_handler_IO;
         //saio.sa_mask = (__sigset_t)0;
-        sigemptyset(&saio.sa_mask);
+        //sigemptyset(&saio.sa_mask);
         //saio.sa_flags = 0;
-        saio.sa_flags = SA_SIGINFO;
-        saio.sa_restorer = NULL;
-        sigaction(SIGIO, &saio, NULL);
+        //saio.sa_flags = SA_SIGINFO;
+        //saio.sa_restorer = NULL;
+        //sigaction(SIGIO, &saio, NULL);
 
         /*
           разрешаем процессу получать SIGIO
         */
-        fcntl(fd, F_SETOWN, getpid());
+        //fcntl(fd, F_SETOWN, getpid());
 
         /*
           делаем файловый дескриптор асинхронным (страница руководства
           говорит, что только O_APPEND и O_NONBLOCK будут работать
           с F_SETFL...)
         */
-        fcntl(fd, F_SETFL, FASYNC);
+        //fcntl(fd, F_SETFL, FASYNC);
 
 	}
 
@@ -94,6 +132,44 @@ void close_port(int fd)
 		{
 			close(fd);
 		}
+}
+
+// Writes bytes to the serial port, returning 0 on success and -1 on failure.
+int write_port(int fd, uint8_t * buffer, size_t size)
+{
+	ssize_t result = write(fd, buffer, size);
+	if (result != (ssize_t)size)
+	{
+		perror("failed to write to port - ");
+		return -1;
+	}
+	return 0;
+}
+
+// Reads bytes from the serial port.
+// Returns after all the desired bytes have been read, or if there is a
+// timeout or other error.
+// Returns the number of bytes successfully read into the buffer, or -1 if
+// there was an error reading.
+ssize_t read_port(int fd, uint8_t * buffer, size_t size)
+{
+	size_t received = 0;
+	while (received < size)
+	{
+		ssize_t r = read(fd, buffer + received, size - received);
+		if (r < 0)
+		{
+			perror("failed to read from port -.");
+			return -1;
+		}
+		if (r == 0)
+		{
+			// Timeout
+			break;
+		}
+		received += r;
+	}
+	return received;
 }
 
 int set_buffer()
