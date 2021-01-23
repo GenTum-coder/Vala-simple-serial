@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <sys/signal.h>
 #include <sys/types.h>
+#include <sys/ioctl.h>
 
 #define FALSE 0
 #define TRUE  1
@@ -89,6 +90,12 @@ int open_port()
 		options.c_cc[VTIME] = 1;
 		options.c_cc[VMIN]  = 0;
 
+
+		// This code only supports certain standard baud rates. Supporting
+		// non-standard baud rates should be possible but takes more work.
+		cfsetospeed(&options, B115200);
+		cfsetispeed(&options, cfgetospeed(&options));
+
 		result = tcsetattr(fd, TCSANOW, &options);
 		if (result)
 		{
@@ -126,11 +133,12 @@ int open_port()
 	return (fd);
 }
 
-void close_port(int fd)
+void close_port(int fd_l)
 {
-	if (fd >= 0)
+	if (fd_l >= 0)
 		{
-			close(fd);
+			close(fd_l);
+			fd = -1;
 		}
 }
 
@@ -159,7 +167,7 @@ ssize_t read_port(int fd, uint8_t * buffer, size_t size)
 		ssize_t r = read(fd, buffer + received, size - received);
 		if (r < 0)
 		{
-			perror("failed to read from port -.");
+			perror("failed to read from port - ");
 			return -1;
 		}
 		if (r == 0)
@@ -184,9 +192,18 @@ int set_buffer()
 
 int is_buffer()
 {
+	int available = 0;
+
 	//if (wait_flag == FALSE) return 1;
 	//else return 0;
-	return p2 - p1;
+	//return p2 - p1;
+
+	if( ioctl(fd, FIONREAD, &available ) < 0 ) {
+		// Error handling here
+		perror("ioctl FIONREAD error - ");
+		available = 0;
+	}
+	return available;
 }
 
 void clear_port()

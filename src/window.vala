@@ -25,6 +25,7 @@ extern void clear_port();
 extern int set_buffer();
 extern int is_buffer();
 extern char read_char();
+extern ssize_t read_port(int fd, uint8 * buffer, size_t size);
 
 
 namespace ValaTerminal {
@@ -43,6 +44,9 @@ namespace ValaTerminal {
         int n;
         int t;
         char ch;
+        uint8 u8;
+        uint8 buf_u8[2048];
+        bool  chg;
 
         TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
 
@@ -88,6 +92,7 @@ namespace ValaTerminal {
             n = set_buffer();
             t = 0;
             ch = ' ';
+            chg = false;
 
             memo1.set_buffer(buffer);
 
@@ -96,7 +101,7 @@ namespace ValaTerminal {
 			combo1.changed.connect (this.br_chg);
 
 
-            TimeoutSource time = new TimeoutSource(2000);   // set timer in millisecond
+            TimeoutSource time = new TimeoutSource(100);   // set timer in millisecond
             time.set_callback(() => {
                 //t++;
                 //label1.label = "Hello World! + " + t.to_string ();
@@ -104,15 +109,36 @@ namespace ValaTerminal {
                 //	read_char();
                 //	str = str + "Hello"; //(string)read_char();
                 //}
-				n = is_buffer();
+				//n = is_buffer();
+				//n = (int)read_port(fd, buf_u8, 1);
 				//label1.label = "Cnt n = " + n.to_string ();
-				str = "Cnt n = " + n.to_string ();
-				if (n > 0) {
-					ch = read_char();
-					str = str + " ch = " + ch.to_string();
+				//str = "Cnt n = " + n.to_string ();
+				//if (n > 0) {
+				//	ch = read_char();
+				//	str = str + " ch = " + ch.to_string();
+				//}
+				n = 0;
+				if ((fd >= 0) && (is_buffer() > 0)) {
+					n = is_buffer();
+					label1.label = "Cnt n = " + n.to_string ();
+					n = (int)read_port(fd, buf_u8, 1);
 				}
-                buffer.set_text(str);
-                label1.label = str;
+				while ((fd >= 0) && (n > 0)) {
+					u8 = buf_u8[0];
+					ch = (char)u8;
+					if (ch != '\r')
+						str = str + "" + ch.to_string();
+					n = 0;
+					if (is_buffer() > 0)
+						n = (int)read_port(fd, buf_u8, 1);
+					//t++;
+					chg = true;
+				}
+				//t = 0;
+				if (chg)
+                	buffer.set_text(str);
+                chg = false;
+                //label1.label = str;
 
                 return true;    // timer continue
                 //return false;   // timer stop
