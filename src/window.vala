@@ -20,7 +20,8 @@ using Gtk;
 //using Posix;
 
 //extern functions from port.c
-extern int  open_port();
+//extern int  open_port();
+extern int open_serial_port(char * device, uint32 baud_rate);
 extern void close_port(int fd);
 extern int is_buffer(int fd);
 extern ssize_t read_port(int fd, uint8 * buffer, size_t size);
@@ -34,7 +35,8 @@ namespace ValaTerminal {
 		[GtkChild] Button button1;
 		[GtkChild] Button button2;
 		[GtkChild] CheckButton check1;
-		[GtkChild] Gtk.ComboBoxText combo1;
+		[GtkChild] ComboBoxText combo1;
+		[GtkChild] ComboBoxText combo2;
 		[GtkChild] Entry  edit1;
 		[GtkChild] TextView memo1;
 
@@ -46,35 +48,33 @@ namespace ValaTerminal {
         char ch;
         uint8 u8;
         uint8 buf_in[2048];
-        uint8 buf_out[256];
         bool  chg;
+        //string tty = "/dev/ttyACM0";
 
         TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
 
-        private void send() {
-        	string s;
-        	int len;
-            s = edit1.get_text() + "\n\r";
-            len = s.length;
-            //len = 6;
-            for (int i=0;i<len;i++)
-            	buf_out[i] = (uint8)s[i];
-            //buf_out[0] = (uint8)'h';
-            //buf_out[1] = (uint8)'e';
-            //buf_out[2] = (uint8)'l';
-            //buf_out[3] = (uint8)'p';
-            //buf_out[4] = (uint8)'\n';
-            //buf_out[5] = (uint8)'\r';
-            //buf_out[6] = 0;
-			write_port(fd, buf_out, (size_t)len);
-        }
+		private void send() {
+			string s;
+			int len;
+			s = edit1.get_text() + "\n\r";
+			len = s.length;
+			write_port(fd, (uint8*)s.data, (size_t)len);
+		}
 
-        private void port_ctrl() {
+		private void port_ctrl() {
+			string sbr;
+			string stty;
 			//check1.set_mode(true);
 			if (!check1.get_active()) {
-				fd = open_port();
+				sbr  = combo1.get_active_text();
+				stty = combo2.get_active_text();
+				//fd = open_port();
+				//fd = open_serial_port(tty.data, 115200);
+				//fd = open_serial_port(tty.data, int.parse(s));
+				fd = open_serial_port(stty.data, int.parse(sbr));
 				if (fd != -1) {
 					check1.set_active(true);
+					check1.label = stty;
 					button2.label = "Disconnect";
 				}
 			}
@@ -87,11 +87,15 @@ namespace ValaTerminal {
 				button2.label = "Connect";
 			}
 
-        }
+		}
 
-        private void br_chg() {
-            label1.label = combo1.get_active_text();
-        }
+		private void br_chg() {
+			label1.label = combo1.get_active_text();
+		}
+
+		private void tty_chg() {
+			label1.label = combo2.get_active_text();
+		}
 
 		public Window (Gtk.Application app) {
 			Object (application: app);
@@ -107,6 +111,7 @@ namespace ValaTerminal {
 			button1.clicked.connect (this.send);
 			button2.clicked.connect (this.port_ctrl);
 			combo1.changed.connect (this.br_chg);
+			combo2.changed.connect (this.tty_chg);
 
 
             TimeoutSource time = new TimeoutSource(100);   // set timer in millisecond

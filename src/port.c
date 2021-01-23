@@ -19,7 +19,11 @@
  *
  * Returns the file descriptor on success or -1 on error.
  */
-int open_port()
+// Opens the specified serial port, sets it up for binary communication,
+// configures its read timeouts, and sets its baud rate.
+// Returns a non-negative file descriptor on success, or -1 on failure.
+int open_serial_port(const char * device, uint32_t baud_rate)
+//int open_port()
 {
 	int fd; /* File descriptor for the port */
 
@@ -65,6 +69,20 @@ int open_port()
 
 		// This code only supports certain standard baud rates. Supporting
 		// non-standard baud rates should be possible but takes more work.
+		switch (baud_rate)
+		{
+			case 4800:   cfsetospeed(&options, B4800);   break;
+			case 9600:   cfsetospeed(&options, B9600);   break;
+			case 19200:  cfsetospeed(&options, B19200);  break;
+			case 38400:  cfsetospeed(&options, B38400);  break;
+			case 115200: cfsetospeed(&options, B115200); break;
+			default:
+				fprintf(stderr, "warning: baud rate %u is not supported, using 9600.\n",
+						baud_rate);
+				cfsetospeed(&options, B9600);
+			break;
+		}
+
 		cfsetospeed(&options, B115200);
 		cfsetispeed(&options, cfgetospeed(&options));
 

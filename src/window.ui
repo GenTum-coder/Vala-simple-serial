@@ -29,7 +29,7 @@
             </child>
             <child>
               <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">button</property>
+                <property name="label" translatable="yes">Send</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -91,10 +91,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label1">
+              <object class="GtkComboBoxText" id="combo2">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">label</property>
+                <property name="active">0</property>
+                <items>
+                  <item translatable="yes">/dev/ttyUSB0</item>
+                  <item translatable="yes">/dev/ttyUSB1</item>
+                  <item translatable="yes">/dev/ttyACM0</item>
+                  <item translatable="yes">/dev/ttyACM1</item>
+                </items>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -115,7 +121,7 @@
             <property name="can-focus">False</property>
             <child>
               <object class="GtkButton" id="button2">
-                <property name="label" translatable="yes">button</property>
+                <property name="label" translatable="yes">Connect</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -139,6 +145,18 @@
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">label</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
