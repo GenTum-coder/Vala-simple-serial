@@ -19,6 +19,7 @@
               <object class="GtkEntry" id="edit1">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="input-purpose">terminal</property>
               </object>
               <packing>
                 <property name="expand">True</property>
