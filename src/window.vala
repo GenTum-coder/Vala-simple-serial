@@ -17,7 +17,6 @@
  */
 
 using Gtk;
-//using Posix;
 
 //extern functions from port.c
 //extern int  open_port();
@@ -34,6 +33,7 @@ namespace ValaTerminal {
 		[GtkChild] Label label1;
 		[GtkChild] Button button1;
 		[GtkChild] Button button2;
+		[GtkChild] Button button3;
 		[GtkChild] CheckButton check1;
 		[GtkChild] ComboBoxText combo1;
 		[GtkChild] ComboBoxText combo2;
@@ -47,7 +47,7 @@ namespace ValaTerminal {
         int t;
         char ch;
         uint8 u8;
-        uint8 buf_in[2048];
+        uint8 buf_in[32768];
         bool  chg;
         //string tty = "/dev/ttyACM0";
 
@@ -97,6 +97,11 @@ namespace ValaTerminal {
 			label1.label = combo2.get_active_text();
 		}
 
+		private void memo_clear() {
+			str = "";
+			buffer.set_text(str);
+		}
+
 		public Window (Gtk.Application app) {
 			Object (application: app);
 
@@ -106,22 +111,25 @@ namespace ValaTerminal {
             ch = ' ';
             chg = false;
 
-            memo1.set_buffer(buffer);
+			memo1.set_buffer(buffer);
+			buffer.set_text(str);
 
 			button1.clicked.connect (this.send);
 			button2.clicked.connect (this.port_ctrl);
+			button3.clicked.connect (this.memo_clear);
 			combo1.changed.connect (this.br_chg);
 			combo2.changed.connect (this.tty_chg);
 
 
-            TimeoutSource time = new TimeoutSource(100);   // set timer in millisecond
-            time.set_callback(() => {
+            TimeoutSource time_serial = new TimeoutSource(100);   // set timer in millisecond
+            time_serial.set_callback(() => {
 				//t = 0;
 				if (fd >= 0) {
 					n = is_buffer(fd);
 					label1.label = "Cnt n = " + n.to_string ();
 					res = (int)read_port(fd, buf_in, n);
 					t = 0;
+					//chg = true;
 				}
 				while ((fd >= 0) && (n > t)) {
 					u8 = buf_in[t];
@@ -139,9 +147,9 @@ namespace ValaTerminal {
                 return true;    // timer continue
                 //return false;   // timer stop
             });
-            time.attach(null);
+            time_serial.attach(null);
 
-            this.show_all ();
+			this.show_all ();
 		}
 	}
 }
