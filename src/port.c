@@ -28,14 +28,16 @@ int open_serial_port(const char * device, uint32_t baud_rate)
 	int fd; /* File descriptor for the port */
 
 	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
+	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
+	fd = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
 	if (fd == -1)
 	{
 		/*
 		* Could not open the port.
 		*/
 
-		perror("open_port: Unable to open /dev/ttyUSB0 - ");
+		//perror("open_port: Unable to open /dev/ttyUSB0 - ");
+		perror("open_port: Unable to open serial port - ");
 	}
 	else
 	{

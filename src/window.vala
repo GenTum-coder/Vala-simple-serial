@@ -17,6 +17,8 @@
  */
 
 using Gtk;
+//using Gee;
+using Posix;
 
 //extern functions from port.c
 //extern int  open_port();

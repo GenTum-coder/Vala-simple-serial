@@ -7,6 +7,8 @@ vala_terminal_sources = [
 vala_terminal_deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk+-3.0', version: '>= 3.22'),
+#  dependency('gee-0.8', version: '>= 0.18'),
+  meson.get_compiler('vala').find_library('posix'),
 ]
 
 gnome = import('gnome')

@@ -3,6 +3,25 @@
 	<id>org.example.App.desktop</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-3.0-or-later</project_license>
+  <name>vala_terminal</name>
+  <summary>vala_terminal</summary>
 	<description>
+  <p>
+    vala_terminal is simple serial terminal.
+  </p>
+  <p xml:lang="ru">
+    vala_terminal - простой serial терминал.
+  </p>
 	</description>
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://github.com/flatpak/vala_terminal_001.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.0.12" date="2021-01-29"/>
+  </releases>
+  <url type="homepage">https://github.com/flatpak</url>
+  <content_rating type="oars-1.1"/>
 </component>
+
