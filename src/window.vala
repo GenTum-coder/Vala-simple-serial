@@ -17,11 +17,9 @@
  */
 
 using Gtk;
-//using Gee;
 using Posix;
 
-//extern functions from port.c
-//extern int  open_port();
+//
 extern int open_serial_port(char * device, uint32 baud_rate);
 extern void close_port(int fd);
 extern int is_buffer(int fd);
@@ -45,13 +43,12 @@ namespace ValaTerminal {
         string str;
         int fd;
         int n;
-        int res;
         int t;
+        int res;
         char ch;
         uint8 u8;
         uint8 buf_in[32768];
         bool  chg;
-        //string tty = "/dev/ttyACM0";
 
         TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
 
@@ -66,13 +63,9 @@ namespace ValaTerminal {
 		private void port_ctrl() {
 			string sbr;
 			string stty;
-			//check1.set_mode(true);
 			if (!check1.get_active()) {
 				sbr  = combo1.get_active_text();
 				stty = combo2.get_active_text();
-				//fd = open_port();
-				//fd = open_serial_port(tty.data, 115200);
-				//fd = open_serial_port(tty.data, int.parse(s));
 				fd = open_serial_port(stty.data, int.parse(sbr));
 				if (fd != -1) {
 					check1.set_active(true);
@@ -107,11 +100,10 @@ namespace ValaTerminal {
 		public Window (Gtk.Application app) {
 			Object (application: app);
 
-            str = "";
-            fd  = -1;
-            t = 0;
-            ch = ' ';
-            chg = false;
+			str = "";
+			fd  = -1;
+			ch = ' ';
+			chg = false;
 
 			memo1.set_buffer(buffer);
 			buffer.set_text(str);
@@ -123,15 +115,13 @@ namespace ValaTerminal {
 			combo2.changed.connect (this.tty_chg);
 
 
-            TimeoutSource time_serial = new TimeoutSource(100);   // set timer in millisecond
-            time_serial.set_callback(() => {
-				//t = 0;
+			TimeoutSource time_serial = new TimeoutSource(100);   // set timer in millisecond
+			time_serial.set_callback(() => {
 				if (fd >= 0) {
 					n = is_buffer(fd);
 					label1.label = "Cnt n = " + n.to_string ();
 					res = (int)read_port(fd, buf_in, n);
 					t = 0;
-					//chg = true;
 				}
 				while ((fd >= 0) && (n > t)) {
 					u8 = buf_in[t];
@@ -141,15 +131,14 @@ namespace ValaTerminal {
 					t++;
 					chg = true;
 				}
-				//t = 0;
 				if (chg)
-                	buffer.set_text(str);
-                chg = false;
+					buffer.set_text(str);
+				chg = false;
 
-                return true;    // timer continue
-                //return false;   // timer stop
-            });
-            time_serial.attach(null);
+				return true;    // timer continue
+				//return false;   // timer stop
+			});
+			time_serial.attach(null);
 
 			this.show_all ();
 		}

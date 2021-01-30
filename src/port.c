@@ -9,34 +9,19 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 
-#define FALSE 0
-#define TRUE  1
-
-// var
-
-/*
- * 'open_port()' - Open serial port 1.
- *
- * Returns the file descriptor on success or -1 on error.
- */
 // Opens the specified serial port, sets it up for binary communication,
 // configures its read timeouts, and sets its baud rate.
 // Returns a non-negative file descriptor on success, or -1 on failure.
 int open_serial_port(const char * device, uint32_t baud_rate)
-//int open_port()
 {
 	int fd; /* File descriptor for the port */
 
-	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
 	fd = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
 	if (fd == -1)
 	{
 		/*
 		* Could not open the port.
 		*/
-
-		//perror("open_port: Unable to open /dev/ttyUSB0 - ");
 		perror("open_port: Unable to open serial port - ");
 	}
 	else
@@ -95,8 +80,6 @@ int open_serial_port(const char * device, uint32_t baud_rate)
 			close(fd);
 			return -1;
 		}
-
-		//fcntl(fd, F_SETFL, 0);
 
 	}
 
@@ -160,5 +143,4 @@ int is_buffer(int fd)
 	}
 	return available;
 }
-
 
