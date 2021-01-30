@@ -15,13 +15,13 @@
 	</description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://github.com/flatpak/vala_terminal_001.png</image>
+      <image type="source">https://github.com/GenTum-coder/Vala-simple-serial/blob/master/data/vala_terminal_001.png</image>
     </screenshot>
   </screenshots>
   <releases>
     <release version="0.0.12" date="2021-01-29"/>
   </releases>
-  <url type="homepage">https://github.com/flatpak</url>
+  <url type="homepage">https://github.com/GenTum-coder/Vala-simple-serial</url>
   <content_rating type="oars-1.1"/>
 </component>
 
