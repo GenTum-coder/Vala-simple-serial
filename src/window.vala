@@ -40,17 +40,17 @@ namespace ValaTerminal {
 		[GtkChild] Entry  edit1;
 		[GtkChild] TextView memo1;
 
-        string str;
-        int fd;
-        int n;
-        int t;
-        int res;
-        char ch;
-        uint8 u8;
-        uint8 buf_in[32768];
-        bool  chg;
+		string str;
+		int fd;
+		int n;
+		int t;
+		int res;
+		char ch;
+		uint8 u8;
+		uint8 buf_in[32768];
+		bool  chg;
 
-        TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
+		TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
 
 		private void send() {
 			string s;
