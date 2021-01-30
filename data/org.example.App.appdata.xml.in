@@ -15,7 +15,7 @@
 	</description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://github.com/GenTum-coder/Vala-simple-serial/blob/master/data/vala_terminal_001.png</image>
+      <image type="source">https://github.com/GenTum-coder/Vala-simple-serial/blob/master/data/vala_terminal_001.png?raw=true</image>
     </screenshot>
   </screenshots>
   <releases>
