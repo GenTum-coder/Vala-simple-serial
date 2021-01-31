@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=vala-terminal
+Exec=vala-terminal
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

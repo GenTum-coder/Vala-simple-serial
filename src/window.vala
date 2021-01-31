@@ -28,7 +28,7 @@ extern int write_port(int fd, uint8 * buffer, size_t size);
 //
 
 namespace ValaTerminal {
-	[GtkTemplate (ui = "/org/example/App/window.ui")]
+	[GtkTemplate (ui = "/org/example/vala-terminal/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
 		[GtkChild] Label label1;
 		[GtkChild] Button button1;
