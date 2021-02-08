@@ -17,6 +17,7 @@
  */
 
 using Gtk;
+using GLib;
 using Posix;
 
 //
@@ -30,10 +31,12 @@ extern int write_port(int fd, uint8 * buffer, size_t size);
 namespace ValaTerminal {
 	[GtkTemplate (ui = "/org/example/vala-terminal/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
-		[GtkChild] Label label1;
+		[GtkChild] Label  label1;
 		[GtkChild] Button button1;
 		[GtkChild] Button button2;
 		[GtkChild] Button button3;
+		[GtkChild] Button button4;
+		[GtkChild] Button button5;
 		[GtkChild] CheckButton check1;
 		[GtkChild] ComboBoxText combo1;
 		[GtkChild] ComboBoxText combo2;
@@ -51,6 +54,7 @@ namespace ValaTerminal {
 		bool  chg;
 
 		TextBuffer buffer = new TextBuffer (null); //stores text to be displayed
+		GLib.Settings settings = new GLib.Settings ("org.example.vala-terminal");
 
 		private void send() {
 			string s;
@@ -97,6 +101,20 @@ namespace ValaTerminal {
 			buffer.set_text(str);
 		}
 
+		private void set_prefs() {
+			settings.set_int ("combo2item", combo2.get_active());
+			settings.set_int ("combo1item", combo1.get_active());
+			print ("Set prefs.\n");
+		}
+
+		private void get_prefs() {
+			var i = 0;
+			i = settings.get_int ("combo2item");
+			combo2.set_active(i);
+			i = settings.get_int ("combo1item");
+			combo1.set_active(i);
+		}
+
 		public Window (Gtk.Application app) {
 			Object (application: app);
 
@@ -108,14 +126,16 @@ namespace ValaTerminal {
 			memo1.set_buffer(buffer);
 			buffer.set_text(str);
 
+			// set signals
 			button1.clicked.connect (this.send);
 			button2.clicked.connect (this.port_ctrl);
 			button3.clicked.connect (this.memo_clear);
+			button4.clicked.connect (this.set_prefs);
+			button5.clicked.connect (this.get_prefs);
 			combo1.changed.connect (this.br_chg);
 			combo2.changed.connect (this.tty_chg);
 
-
-			TimeoutSource time_serial = new TimeoutSource(100);   // set timer in millisecond
+			GLib.TimeoutSource time_serial = new GLib.TimeoutSource(100);   // set timer in millisecond
 			time_serial.set_callback(() => {
 				if (fd >= 0) {
 					n = is_buffer(fd);
@@ -140,8 +160,19 @@ namespace ValaTerminal {
 			});
 			time_serial.attach(null);
 
+			// get preferenses
+			combo2.set_active(settings.get_int ("combo2item"));
+			combo1.set_active(settings.get_int ("combo1item"));
+
+			// show all
 			this.show_all ();
 		}
+
+		~Window() {
+
+		}
+
 	}
+
 }
 

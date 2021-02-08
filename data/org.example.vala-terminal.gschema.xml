@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="vala-terminal">
 	<schema id="org.example.vala-terminal" path="/org/example/vala-terminal/">
+    <key name="combo1item" type="i">
+      <default>0</default>
+      <summary>combo1 item</summary>
+      <description>
+        combo1 item
+      </description>
+    </key>
+    <key name="combo2item" type="i">
+      <default>0</default>
+      <summary>combo2 item</summary>
+      <description>
+        combo2 item
+      </description>
+    </key>
 	</schema>
 </schemalist>
+
