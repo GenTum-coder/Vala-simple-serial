@@ -4,11 +4,14 @@ Vala simple serial terminal.
 Example GUI application for Endless OS use Gnome Builder.
 Output file - Flatpak.
 
+ru: Возможно использовать с MicroPython Raspberry Pi Pico .
+
+
 Open terminal ...
 
 Get info:
 flatpak info org.example.vala-terminal
 
 Uninstall:
-flatpack uninstall org.example.vala-terminal
+flatpak uninstall org.example.vala-terminal
 

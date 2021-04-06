@@ -37,7 +37,12 @@ namespace ValaTerminal {
 		[GtkChild] Button button3;
 		[GtkChild] Button button4;
 		[GtkChild] Button button5;
+		[GtkChild] Button button6;
+		[GtkChild] Button button7;
+		[GtkChild] Button button8;
 		[GtkChild] CheckButton check1;
+		[GtkChild] CheckButton check2;
+		[GtkChild] CheckButton check3;
 		[GtkChild] ComboBoxText combo1;
 		[GtkChild] ComboBoxText combo2;
 		[GtkChild] Entry  edit1;
@@ -59,9 +64,36 @@ namespace ValaTerminal {
 		private void send() {
 			string s;
 			int len;
-			s = edit1.get_text() + "\n\r";
+			uint8 val;
+			s = edit1.get_text();// + "\n\r";
 			len = s.length;
 			write_port(fd, (uint8*)s.data, (size_t)len);
+			if (check2.get_active()) {
+				val = 10;
+				write_port(fd, &val, 1);
+			}
+			if (check3.get_active()) {
+				val = 13;
+				write_port(fd, &val, 1);
+			}
+		}
+
+		private void ctrl_c() {
+			uint8 val;
+			val = 3;
+			write_port(fd, &val, 1);
+		}
+
+		private void ctrl_d() {
+			uint8 val;
+			val = 4;
+			write_port(fd, &val, 1);
+		}
+
+		private void ctrl_e() {
+			uint8 val;
+			val = 5;
+			write_port(fd, &val, 1);
 		}
 
 		private void port_ctrl() {
@@ -132,6 +164,9 @@ namespace ValaTerminal {
 			button3.clicked.connect (this.memo_clear);
 			button4.clicked.connect (this.set_prefs);
 			button5.clicked.connect (this.get_prefs);
+			button6.clicked.connect (this.ctrl_c);
+			button7.clicked.connect (this.ctrl_d);
+			button8.clicked.connect (this.ctrl_e);
 			combo1.changed.connect (this.br_chg);
 			combo2.changed.connect (this.tty_chg);
 
